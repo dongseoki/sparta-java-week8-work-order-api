@@ -6,7 +6,9 @@ import com.sparta.orderapi.event.OrderEventPublisher;
 import com.sparta.orderapi.model.Order;
 import com.sparta.orderapi.service.OrderService;
 import com.sparta.orderapi.webdto.CreateOrderRequest;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,23 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/order")
+@RequiredArgsConstructor
 public class OrderController {
-    @Autowired
-    private OrderEventPublisher orderEventPublisher;
+    private final OrderEventPublisher orderEventPublisher;
+    private final OrderService orderService;
 
-    @Autowired
-    private OrderService orderService;
 
     @PostMapping
     @Operation(summary = "Create a new order")
     public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-
         Order order = Order.of(createOrderRequest);
-        order.setStatus("PENDING");
         orderService.createOrder(order);
         orderEventPublisher.publishOrderCreated(CreateOrderEvent.of(order));
 
-        return ResponseEntity.ok("Order Created: " + order.getId().toString());
+        return ResponseEntity.ok("Order Created: " + order);
     }
 
     @GetMapping("/{id}")
