@@ -25,9 +25,10 @@ repositories {
 
 dependencies {
 
+	// kafka
 	// https://mvnrepository.com/artifact/org.springframework.kafka/spring-kafka
 	implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.3.2'
-// https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
+	// https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
 	implementation group: 'org.apache.kafka', name: 'kafka-clients', version: '3.9.0'
 
 

@@ -3,7 +3,8 @@ spring:
     name: orderapi
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/orderdb?serverTimezone=UTC&characterEncoding=UTF-8&allowMultiQueries=true
+    #    TODO create commerce
+    url: jdbc:mysql://order-db:3306/orderdb?serverTimezone=UTC&characterEncoding=UTF-8&allowMultiQueries=true
     username: root
     password: rootpassword
     minimum-idle: 10
@@ -80,7 +81,6 @@ logging:
       springframework:
         kafka: DEBUG
         transaction: DEBUG
-
 
 springdoc:
   swagger-ui:
