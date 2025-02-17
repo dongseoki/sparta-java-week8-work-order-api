@@ -1,6 +1,7 @@
 package com.sparta.orderapi.controller;
 
 
+import com.sparta.orderapi.event.CreateOrderEvent;
 import com.sparta.orderapi.event.OrderEventPublisher;
 import com.sparta.orderapi.model.Order;
 import com.sparta.orderapi.service.OrderService;
@@ -31,7 +32,7 @@ public class OrderController {
         Order order = Order.of(createOrderRequest);
         order.setStatus("PENDING");
         orderService.createOrder(order);
-        orderEventPublisher.publishOrderCreated(order.getId());
+        orderEventPublisher.publishOrderCreated(CreateOrderEvent.of(order));
 
         return ResponseEntity.ok("Order Created: " + order.getId().toString());
     }

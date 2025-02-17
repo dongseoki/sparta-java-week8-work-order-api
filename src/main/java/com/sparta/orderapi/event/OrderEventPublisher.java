@@ -7,7 +7,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,12 +29,17 @@ public class OrderEventPublisher {
         }
         log.info("Kafka message send attempt: {}", sendData);
 
-        CompletableFuture.runAsync(() -> kafkaTemplate.send(topicName, sendData))
-            .thenAccept(result -> log.info("Message sent successfully to topic: {}, partition: {}",
-                topicName, Objects.requireNonNull(result).getRecordMetadata().partition()))
-            .exceptionally(ex -> {
-                log.error("Failed to send message to topic: {}", topicName, ex);
-                return null;
-            });
+
+        try {
+            SendResult<String, String> sendResult = kafkaTemplate.send(topicName,
+                sendData).get();
+            int partition = sendResult.getRecordMetadata().partition();
+            RecordMetadata recordMetadata = sendResult.getRecordMetadata();
+            log.info("Message sent successfully to topic: {}, partition: {}, metaData: {}"
+                , topicName, partition, recordMetadata);
+        } catch (Exception ex) {
+            log.error("Failed to send message to topic: {}", topicName, ex);
+            throw new RuntimeException("Failed to publish order event", ex);
+        }
     }
 }
